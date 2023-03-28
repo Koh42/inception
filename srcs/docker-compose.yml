@@ -1,0 +1,112 @@
+version: '3'
+
+name: ft
+
+services:
+
+  nginx:
+    build: ./requirements/nginx
+    image: nginx:skoh
+    restart: always
+    depends_on: [wordpress]
+    networks:
+      wpnet:
+        aliases: [$DOMAIN]
+    ports: [443:443]
+    volumes:
+      - ${HOME}/data/wordpress:/wordpress
+    environment:
+      SSL_DOMAIN: $DOMAIN
+
+  wordpress:
+    build: ./requirements/wordpress
+    image: wordpress:skoh
+    restart: always
+    depends_on: [mariadb, redis]
+    networks: [wpnet, dbnet, redisnet]
+    user: $UID:$GID
+    volumes:
+      - ${HOME}/data/wordpress:/wordpress
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: $DB_NAME
+      DB_USER: $DB_USER
+      DB_USER_PASS: $DB_USER_PASS
+      DOMAIN: $DOMAIN
+      WP_TITLE: $WP_TITLE
+      WP_ADMIN: $WP_ADMIN
+      WP_PASS: $WP_PASS
+      WP_EMAIL: $WP_EMAIL
+      REDIS_HOST: redis
+      REDIS_PASS: $REDIS_PASS
+
+  mariadb:
+    build: ./requirements/mariadb
+    image: mariadb:skoh
+    restart: always
+    networks: [dbnet]
+    user: $UID:$GID
+    volumes:
+      - ${HOME}/data/mariadb:/var/lib/mysql
+    environment:
+      INIT_DB_ROOT_PASS: $DB_ROOT_PASS
+      INIT_DB_NAME: $DB_NAME
+      INIT_DB_USER: $DB_USER
+      INIT_DB_USER_PASS: $DB_USER_PASS
+
+  ##################### BONUS #####################
+
+  adminer:
+    build: ./requirements/bonus/adminer
+    image: adminer:skoh
+    ports: [88:80]
+    depends_on: [mariadb]
+    networks: [dbnet]
+    environment:
+      ADMINER_DEFAULT_SERVER: mariadb
+
+  redis:
+    build: ./requirements/bonus/redis
+    image: redis:skoh
+    restart: always
+    networks: [redisnet]
+    environment:
+      REDIS_PASS: $REDIS_PASS
+
+  redis-commander:
+    build: ./requirements/bonus/redis-commander
+    image: redis-commander:skoh
+    depends_on: [redis]
+    networks: [redisnet]
+    ports: [99:80]
+    environment:
+      REDIS_HOST: redis
+      REDIS_PASS: $REDIS_PASS
+      WEB_USER: $REDIS_WEB_USER
+      WEB_PASS: $REDIS_WEB_PASS
+
+  ftp:
+    build: ./requirements/bonus/ftp
+    image: ftp:skoh
+    restart: always
+    volumes:
+      - $HOME/data/wordpress:/wordpress
+    ports: [20-21:20-21,22200-22220:22200-22220]
+    environment:
+      FTP_UID: $UID
+      FTP_USER: $FTP_USER
+      FTP_PASS: $FTP_PASS
+
+  static:
+    build: ./requirements/bonus/static
+    image: static:skoh
+    ports: [80:80]
+    volumes: [./requirements/bonus/static/app/public:/app/public:ro]
+
+networks:
+  wpnet:
+  dbnet:
+  redisnet:
+
+volumes:
+  data:
