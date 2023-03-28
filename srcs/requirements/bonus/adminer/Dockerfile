@@ -6,4 +6,4 @@ RUN         apk add --no-cache php81 php81-session php81-mysqli \
 &&          wget -O adminer.php \
               https://github.com/vrana/adminer/releases/download/v$ADMINER_VERSION/adminer-$ADMINER_VERSION-mysql-en.php
 USER        nobody
-CMD         php81 -S [::]:80
+CMD         php81 -S [::]:8000

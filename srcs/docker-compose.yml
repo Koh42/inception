@@ -59,7 +59,7 @@ services:
   adminer:
     build: ./requirements/bonus/adminer
     image: adminer:skoh
-    ports: [88:80]
+    ports: [88:8000]
     depends_on: [mariadb]
     networks: [dbnet]
     environment:
@@ -78,7 +78,7 @@ services:
     image: redis-commander:skoh
     depends_on: [redis]
     networks: [redisnet]
-    ports: [99:80]
+    ports: [99:8000]
     environment:
       REDIS_HOST: redis
       REDIS_PASS: $REDIS_PASS
