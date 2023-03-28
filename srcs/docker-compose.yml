@@ -14,7 +14,7 @@ services:
         aliases: [$DOMAIN]
     ports: [443:443]
     volumes:
-      - ${HOME}/data/wordpress:/wordpress
+      - $HOME/data/wordpress:/wordpress:ro
     environment:
       SSL_DOMAIN: $DOMAIN
 
@@ -22,11 +22,11 @@ services:
     build: ./requirements/wordpress
     image: wordpress:skoh
     restart: always
-    depends_on: [mariadb, redis]
+    depends_on: [mariadb]
     networks: [wpnet, dbnet, redisnet]
     user: $UID:$GID
     volumes:
-      - ${HOME}/data/wordpress:/wordpress
+      - $HOME/data/wordpress:/wordpress
     environment:
       DB_HOST: mariadb
       DB_NAME: $DB_NAME
@@ -47,7 +47,7 @@ services:
     networks: [dbnet]
     user: $UID:$GID
     volumes:
-      - ${HOME}/data/mariadb:/var/lib/mysql
+      - $HOME/data/mariadb:/var/lib/mysql
     environment:
       INIT_DB_ROOT_PASS: $DB_ROOT_PASS
       INIT_DB_NAME: $DB_NAME
@@ -107,6 +107,3 @@ networks:
   wpnet:
   dbnet:
   redisnet:
-
-volumes:
-  data:

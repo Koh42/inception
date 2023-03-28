@@ -1,6 +1,11 @@
 #!/bin/sh
+
+mkdir -p /run/mysqld
+chown -R mysql /run/mysqld
+chown -R mysql /var/lib/mysql
+
 if [ ! -d /var/lib/mysql/mysql ]; then
-	mysql_install_db  --ldata=/var/lib/mysql > /dev/null
+	mysql_install_db --ldata=/var/lib/mysql > /dev/null
 	DB_ROOT_PASS=${INIT_DB_ROOT_PASS}
 	DB_USER=${INIT_DB_USER:-user}
 	DB_USER_PASS=${INIT_DB_USER_PASS:-password}

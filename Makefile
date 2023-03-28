@@ -5,15 +5,15 @@ COLOR		:= \e[1;93m
 RESET		:= \e[0m
 
 all:
-	make -s first-run
+	make -s init
 	$(COMPOSE) up mariadb wordpress nginx
 
 bonus:
-	make -s first-run
+	make -s init
 	$(COMPOSE) up mariadb wordpress nginx redis adminer ftp static redis-commander
 
 clean:
-	$(COMPOSE) down
+	$(COMPOSE) down --volumes
 	#$(COMPOSE) rm -sfv
 
 fclean: clean
@@ -33,7 +33,7 @@ eval: .force
 	- docker network rm $$(docker network ls -q)
 
 # 1) check docker & docker compose, 2) init srcs/.env, 3) $(HOME)/data/{wordpress,mariadb}
-first-run: .force
+init: .force
 	if ! docker -v 2> /dev/null; then echo Please install docker then try again. && exit 1; fi
 	# for linux, install docker-compose separately
 	if ! docker compose version 2> /dev/null; then \
@@ -46,12 +46,13 @@ first-run: .force
 	make -s srcs/.env
 	mkdir -p $(HOME)/data/wordpress
 	mkdir -p $(HOME)/data/mariadb
+	chmod -R o+w $(HOME)/data
 
 srcs/.env: .force
 	test -f $@ || touch $@
 	grep -qw "DOMAIN" $@ || echo "DOMAIN=$(LOGIN).42.fr" >> $@
-	grep -qw "UID" $@ || echo "UID=`id -u`" >> $@
-	grep -qw "GID" $@ || echo "GID=`id -g`" >> $@
+	grep -qw "UID" $@ || echo "UID=1000" >> $@
+	grep -qw "GID" $@ || echo "GID=1000" >> $@
 	grep -qw "DB_NAME" $@ || echo "DB_NAME=$(LOGIN)" >> $@
 	grep -qw "DB_USER" $@ || echo "DB_USER=$(LOGIN)" >> $@
 	grep -qw "WP_TITLE" $@ || echo "WP_TITLE=$(LOGIN) Blog" >> $@

@@ -2,7 +2,10 @@
 
 if [ ! -e index.php ]; then
 	wp core download
-	wp config create --dbhost=$DB_HOST --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_USER_PASS
+fi
+
+while [ ! -e wp-config.php ]; do
+	wp config create --dbhost=$DB_HOST --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_USER_PASS || continue
 	#wp db create
 	wp core install --url=$DOMAIN --title="$WP_TITLE" --admin_user=$WP_ADMIN --admin_password=$WP_PASS --admin_email=$WP_EMAIL
 	wp config set WP_HOME https://$DOMAIN
@@ -16,6 +19,6 @@ if [ ! -e index.php ]; then
 	wp plugin install w3-total-cache --activate
 	wp plugin delete akismet hello
 	wp theme delete twentytwentyone twentytwentytwo
-fi
+done
 
 exec "$@"
