@@ -91,7 +91,7 @@ services:
     restart: always
     volumes:
       - $HOME/data/wordpress:/wordpress
-    ports: [20-21:20-21,22200-22220:22200-22220]
+    ports: [20-21:20-21,20000-20009:20000-20009]
     environment:
       FTP_UID: $UID
       FTP_USER: $FTP_USER
