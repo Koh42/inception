@@ -6,22 +6,29 @@ RESET		:= \e[0m
 
 all:
 	make -s init
-	$(COMPOSE) up mariadb wordpress nginx
+	$(COMPOSE) up --detach mariadb wordpress nginx
+	$(COMPOSE) logs -f
 
 bonus:
 	make -s init
-	$(COMPOSE) up mariadb wordpress nginx redis adminer ftp static redis-commander
+	$(COMPOSE) up --detach mariadb wordpress nginx redis adminer ftp static redis-commander
+	$(compose) logs -f
 
 clean:
-	$(COMPOSE) down --volumes
-	#$(COMPOSE) rm -sfv
-
-fclean: clean
 	docker container prune -f
-	docker image prune --all -f
+	docker image prune -f
 	docker network prune -f
 	docker volume prune -f
 	docker builder prune --all -f
+
+wipe: .force
+	$(COMPOSE) down
+	$(COMPOSE) run --rm --no-deps mariadb sh -c 'rm -rf /var/lib/mysql/*'
+	$(COMPOSE) run --rm --no-deps wordpress sh -c 'rm -rf /wordpress/*'
+
+fclean: clean
+	$(COMPOSE) down --volumes
+	docker image prune --all -f
 
 re: fclean all
 
@@ -46,13 +53,10 @@ init: .force
 	make -s srcs/.env
 	mkdir -p $(HOME)/data/wordpress
 	mkdir -p $(HOME)/data/mariadb
-	chmod -R o+w $(HOME)/data
 
 srcs/.env: .force
 	test -f $@ || touch $@
 	grep -qw "DOMAIN" $@ || echo "DOMAIN=$(LOGIN).42.fr" >> $@
-	grep -qw "UID" $@ || echo "UID=1000" >> $@
-	grep -qw "GID" $@ || echo "GID=1000" >> $@
 	grep -qw "DB_NAME" $@ || echo "DB_NAME=$(LOGIN)" >> $@
 	grep -qw "DB_USER" $@ || echo "DB_USER=$(LOGIN)" >> $@
 	grep -qw "WP_TITLE" $@ || echo "WP_TITLE=$(LOGIN) Blog" >> $@
@@ -72,10 +76,7 @@ info: .force
 	docker image ls -a
 	docker ps -a
 	docker volume ls
-#$(COMPOSE) images
-#$(COMPOSE) top
-#$(COMPOSE) ps
-#docker network ls
+	docker network ls
 
 help: .force
 	@printf "$(COLOR)make$(RESET) run mandatory services\n"
@@ -113,7 +114,7 @@ else
 
 nginx mariadb wordpress redis ftp adminer static redis-commander: .force
 	$(COMPOSE) stop $@ || true
-	$(COMPOSE) up $@ --build -d
+	$(COMPOSE) up --build -d $@
 	$(COMPOSE) exec $@ sh
 
 endif
@@ -122,8 +123,10 @@ alpine: .force
 	docker run -it --rm -v $(PWD):/inception $(ALPINE)
 
 check: .force
-	#find srcs/requirements -type f -name Dockerfile -exec sed -i '/^FROM/s/.*/FROM $(ALPINE)/' {} +
-	grep -R ^FROM srcs/requirements
+	#grep -R ^FROM srcs/requirements
+ 	#find srcs/requirements -type f -name Dockerfile -exec sed -i '/^FROM/s/.*/FROM $(ALPINE)/' {} +
+	find . -name Dockerfile -print -exec head -1 {} \;
+	find . -name entrypoint.sh -print -exec tail -1 {} \;
 
 .PHONY: all bonus clean fclean re
 .force: ;

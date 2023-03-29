@@ -10,10 +10,9 @@ RUN         apk add --no-cache php81 php81-fpm \
 &&          ln -s /usr/bin/php81 /usr/bin/php \
 &&          ln -s /dev/stderr /var/log/php81/error.log
 COPY        conf/www.conf /etc/php81/php-fpm.d/
-COPY        tools/entrypoint.sh /usr/local/bin/
-RUN         chmod +x /usr/local/bin/entrypoint.sh
-ENTRYPOINT ["entrypoint.sh"]
+COPY        tools/*.sh /usr/local/bin/
+RUN         chmod +x /usr/local/bin/*.sh
+ENTRYPOINT  ["entrypoint.sh"]
 WORKDIR     /wordpress
 STOPSIGNAL  SIGQUIT
-EXPOSE      9000
 CMD         ["php-fpm81", "--nodaemonize"]
