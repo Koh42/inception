@@ -4,5 +4,4 @@ WORKDIR	/app
 COPY	app .
 RUN		npm install express
 USER	nobody
-EXPOSE	80
-CMD		node app.js
+CMD		node app.js 8000

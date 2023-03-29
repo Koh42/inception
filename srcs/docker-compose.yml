@@ -100,7 +100,7 @@ services:
   static:
     build: ./requirements/bonus/static
     image: static:skoh
-    ports: [80:80]
+    ports: [80:8000]
     volumes: [./requirements/bonus/static/app/public:/app/public:ro]
 
 networks:
