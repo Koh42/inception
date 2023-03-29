@@ -36,6 +36,9 @@ services:
       WP_ADMIN: $WP_ADMIN
       WP_PASS: $WP_PASS
       WP_EMAIL: $WP_EMAIL
+      WP_USER: $WP_USER
+      WP_USER_PASS: $WP_USER_PASS
+      WP_USER_EMAIL: $WP_USER_EMAIL
       REDIS_HOST: redis
       REDIS_PASS: $REDIS_PASS
 

@@ -8,6 +8,7 @@ while [ ! -e wp-config.php ]; do
 	wp config create --dbhost=$DB_HOST --dbname=$DB_NAME --dbuser=$DB_USER --dbpass=$DB_USER_PASS || continue
 	#wp db create
 	wp core install --url=$DOMAIN --title="$WP_TITLE" --admin_user=$WP_ADMIN --admin_password=$WP_PASS --admin_email=$WP_EMAIL
+	wp user create $WP_USER $WP_USER_EMAIL --role=author --user_pass=$WP_USER_PASS
 	wp config set WP_HOME https://$DOMAIN
 	wp config set WP_SITEURL https://$DOMAIN
 	wp plugin install redis-cache --activate
