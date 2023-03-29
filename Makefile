@@ -12,7 +12,7 @@ all:
 bonus:
 	make -s init
 	$(COMPOSE) up --detach mariadb wordpress nginx redis adminer ftp static redis-commander
-	$(compose) logs -f
+	$(COMPOSE) logs -f
 
 clean:
 	docker container prune -f
