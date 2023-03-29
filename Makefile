@@ -74,9 +74,13 @@ srcs/.env: .force
 info: .force
 	docker system df
 	docker image ls -a
-	docker ps -a
+	docker ps -as
 	docker volume ls
 	docker network ls
+	$(COMPOSE) top
+	#docker stats
+	#docker info
+	#$(COMPOSE) exec mariadb ps
 
 help: .force
 	@printf "$(COLOR)make$(RESET) run mandatory services\n"
