@@ -63,11 +63,9 @@ srcs/.env: .force
 	grep -qw "WP_ADMIN" $@ || echo "WP_ADMIN=$(LOGIN)" >> $@
 	grep -qw "WP_PASS" $@ || echo "WP_PASS=`openssl rand -base64 6`" >> $@
 	grep -qw "WP_EMAIL" $@ || echo "WP_EMAIL=$(LOGIN)@student.42kl.edu.my" >> $@
-
 	grep -qw "WP_USER" $@ || echo "WP_USER=author" >> $@
 	grep -qw "WP_USER_PASS" $@ || echo "WP_USER_PASS=`openssl rand -base64 6`" >> $@
 	grep -qw "WP_USER_EMAIL" $@ || echo "WP_USER_EMAIL=author@$(LOGIN).42.fr" >> $@
-
 	grep -qw "DB_USER_PASS" $@ || echo "DB_USER_PASS=`openssl rand -base64 6`" >> $@
 	grep -qw "DB_ROOT_PASS" $@ || echo "DB_ROOT_PASS=`openssl rand -base64 6`" >> $@
 	grep -qw "REDIS_PASS" $@ || echo "REDIS_PASS=`openssl rand -base64 6`" >> $@
