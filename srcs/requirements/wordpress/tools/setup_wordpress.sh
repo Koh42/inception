@@ -9,8 +9,6 @@ while [ ! -e wp-config.php ]; do
 	#wp db create
 	wp core install --url=$DOMAIN --title="$WP_TITLE" --admin_user=$WP_ADMIN --admin_password=$WP_PASS --admin_email=$WP_EMAIL
 	wp user create $WP_USER $WP_USER_EMAIL --role=author --user_pass=$WP_USER_PASS
-	wp config set WP_HOME https://$DOMAIN
-	wp config set WP_SITEURL https://$DOMAIN
 	wp plugin install redis-cache --activate
 	wp config set WP_REDIS_HOST $REDIS_HOST
 	wp config set WP_REDIS_PORT "6379"
@@ -21,3 +19,7 @@ while [ ! -e wp-config.php ]; do
 	wp plugin delete akismet hello
 	wp theme delete twentytwentyone twentytwentytwo
 done
+
+# rename domain by restart container without manually vim wp-config.php
+wp config set WP_HOME https://$DOMAIN
+wp config set WP_SITEURL https://$DOMAIN
