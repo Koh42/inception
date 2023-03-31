@@ -12,7 +12,8 @@ services:
     networks:
       wordpressnet:
         aliases: [$DOMAIN]
-    ports: [443:443]
+        # ^ https://github.com/containers/podman-compose/issues/88
+    ports: ["443:443"]
     volumes:
       - wordpress_files:/wordpress:ro
     environment:
@@ -62,7 +63,7 @@ services:
     image: adminer:skoh
     restart: always
     networks: [wordpressnet]
-    ports: [88:8000]
+    ports: ["88:8000"]
     environment:
       ADMINER_DEFAULT_SERVER: mariadb
 
@@ -80,7 +81,7 @@ services:
     restart: always
     networks: [wordpressnet]
     depends_on: [redis]
-    ports: [99:8000]
+    ports: ["99:8000"]
     environment:
       REDIS_HOST: redis
       REDIS_PASS: $REDIS_PASS
@@ -93,7 +94,7 @@ services:
     restart: always
     volumes:
       - wordpress_files:/var/lib/ftp/wordpress
-    ports: [20-21:20-21,20000-20009:20000-20009]
+    ports: ["20-21:20-21","20000-20009:20000-20009"]
     environment:
       FTP_USER: $FTP_USER
       FTP_PASS: $FTP_PASS
@@ -103,8 +104,8 @@ services:
     build: ./requirements/bonus/static
     image: static:skoh
     restart: always
-    ports: [80:8000]
-    volumes: [./requirements/bonus/static/app/public:/app/public:ro]
+    ports: ["80:8000"]
+    volumes: ["./requirements/bonus/static/app/public:/app/public:ro"]
 
 volumes:
   wordpress_db:
