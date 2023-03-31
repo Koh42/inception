@@ -43,7 +43,7 @@ eval: .force
 init: .force
 	if ! docker -v 2> /dev/null; then echo Please install docker then try again. && exit 1; fi
 	# for linux, install docker-compose separately
-	if ! docker compose version 2> /dev/null; then \
+	if ! (docker compose version 2> /dev/null || podman-compose version 2> /dev/null); then \
 		echo Downloading Docker Compose v2; \
 		mkdir -p $(HOME)/.docker/cli-plugins; \
 		wget -O $(HOME)/.docker/cli-plugins/docker-compose \
