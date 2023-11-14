@@ -23,7 +23,7 @@ services:
     build: ./requirements/wordpress
     image: wordpress:skoh
     restart: always
-    depends_on: [mariadb]
+    depends_on: [mariadb, redis]
     networks: [wordpressnet]
     volumes:
       - wordpress_files:/wordpress
